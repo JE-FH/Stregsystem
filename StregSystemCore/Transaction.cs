@@ -21,7 +21,7 @@ namespace StregsystemCore {
         }
         
         public override string ToString() {
-            return $"{ID} {User} {Amount} {Date}";
+            return $"TX{ID}\t{User.Username}\t{Amount}\t{Date}";
         }
 
         virtual public void Execute() {

@@ -25,7 +25,7 @@ namespace StregsystemCore {
             base.Execute();
         }
         public override string ToString() {
-            return $"";
+            return $"Buy\t{Product.Name}\t({Product.ID})\t{base.ToString()}";
         }
     }
 }

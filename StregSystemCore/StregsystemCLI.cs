@@ -42,6 +42,10 @@ namespace StregsystemCore
         {
             Console.WriteLine($"You only have {user.Balance}, but {product.Name} costs {product.Price}");
         }
+        public void DisplayInsufficientCash(User user, BaseProduct product, int count)
+        {
+            Console.WriteLine($"You only have {user.Balance}, but {count} x {product.Name} costs {product.Price * count}");
+        }
 
         public void DisplayProductNotFound(string product)
         {
@@ -65,7 +69,7 @@ namespace StregsystemCore
 
         public void DisplayUserInfo(User user)
         {
-            Console.WriteLine(user);
+            Console.WriteLine($"{user} has {user.Balance} stregdollars");
             var shownTransactions = _stregsystem.GetTransactions(user, 10)
                 .ToList();
             
@@ -73,7 +77,7 @@ namespace StregsystemCore
             
             foreach (Transaction transaction in shownTransactions)
             {
-                Console.WriteLine(transaction);
+                Console.WriteLine(transaction.ToString());
             }
 
             if (user.Balance < 50)
@@ -99,6 +103,7 @@ namespace StregsystemCore
                 Console.Write("> ");
                 string rawCommand = Console.ReadLine();
                 CommandEntered?.Invoke(rawCommand);
+                Console.Write("\n\n");
             }
         }
     }

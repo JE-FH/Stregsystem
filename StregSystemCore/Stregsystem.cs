@@ -85,6 +85,7 @@ namespace StregsystemCore {
             BuyTransaction buyTransaction = new BuyTransaction(_lastTransactionId++, user, product);
             buyTransaction.Execute();
             _transactionLogger.LogTransaction(buyTransaction);
+            _transactions.Add(buyTransaction);
             return buyTransaction;
         }
 

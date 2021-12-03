@@ -10,6 +10,8 @@ namespace OOPEksamenOpgave {
             stregsystem.ReadUsersFromFile("users.csv");
 
             StregsystemCLI stregsystemCLI = new StregsystemCLI(stregsystem);
+            StregsystemController stregsystemController = new StregsystemController(stregsystem, stregsystemCLI);
+
             stregsystemCLI.Start();
         }
     }

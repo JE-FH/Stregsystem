@@ -18,6 +18,7 @@ namespace StregsystemCore
         void DisplayUserBuysProduct(int count, BuyTransaction transaction);
         void Close();
         void DisplayInsufficientCash(User user, BaseProduct product);
+        void DisplayInsufficientCash(User user, BaseProduct product, int count);
         void DisplayGeneralError(string errorString);
         void Start();
         event StregsystemEvent CommandEntered;
