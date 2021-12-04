@@ -140,7 +140,6 @@ namespace StregsystemCore
             return count;
         }
 
-        //TODO: der er overlappende funktionalitet i alle de her commands, så der skal laves noget generelt
         private void UserInfoCommand(string username)
         {
             User user = GetUserOrThrow(username);
