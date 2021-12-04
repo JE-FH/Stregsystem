@@ -35,10 +35,10 @@ namespace StregsystemCore
 
     class AdminCommandNotFoundException : Exception
     {
-        public string GivenComand { get; private set; }
+        public string GivenCommand { get; private set; }
         public AdminCommandNotFoundException(string givenCommand)
         {
-            GivenComand = givenCommand;
+            GivenCommand = givenCommand;
         }
     }
 
@@ -54,9 +54,10 @@ namespace StregsystemCore
         {
             _stregsystem = stregsystem;
             _stregsystemUI = stregsystemUI;
+            _adminCommands = new Dictionary<string, AdminCommandHandler>();
         }
 
-        public void AddAdminComand(string commandName, AdminCommandHandler adminCommandHandler)
+        public void AddAdminCommand(string commandName, AdminCommandHandler adminCommandHandler)
         {
             _adminCommands.Add(commandName, adminCommandHandler);
         }
@@ -81,6 +82,7 @@ namespace StregsystemCore
                     throw new AdminCommandNotFoundException(commandName);
                 }
                 handler(commandName, commandParts[1..]);
+                return;
             }
 
             if (commandParts.Length == 1)
@@ -91,11 +93,14 @@ namespace StregsystemCore
             else if (commandParts.Length == 2)
             {
                 PurchaseCommand(commandParts[0], commandParts[1]);
-                return;
             } 
             else if (commandParts.Length == 3)
             {
-
+                MultiPurchaseCommand(commandParts[0], commandParts[1], commandParts[2]);
+            }
+            else
+            {
+                _stregsystemUI.DisplayTooManyArgumentsError(command);
             }
         }
 

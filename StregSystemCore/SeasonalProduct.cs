@@ -30,6 +30,7 @@ namespace StregsystemCore
             : base(id, name, price, canBeBoughtOnCredit) {
             SeasonStartDate = seasonStartDate;
             SeasonEndDate = seasonEndDate;
+            Active = active;
         }
     }
 }

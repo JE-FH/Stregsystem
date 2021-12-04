@@ -10,10 +10,13 @@ namespace StregsystemCore
         public User User { get; private set; }
 
         public BaseProduct Product { get; private set; }
+        public int Count { get; private set; }
 
-        public InsufficientCreditsException(User user, BaseProduct product) : base("Insufficient streg dollars") {
+        public InsufficientCreditsException(User user, BaseProduct product) : this(user, product, 1) { }
+        public InsufficientCreditsException(User user, BaseProduct product, int count) : base("Insufficient streg dollars") {
             User = user;
             Product = product;
+            Count = count;
         }
     }
 }

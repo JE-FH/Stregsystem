@@ -15,6 +15,7 @@ namespace StregsystemCore
         {
             _stregsystem = stregsystem;
             _running = false;
+            //TODO: Should this be done here on in the controller?
             _stregsystem.UserBalanceWarning += DisplayUserBalanceWarning;
         }
 

@@ -30,12 +30,43 @@ namespace StregsystemCore {
             string[][] res = csvReader.ReadCSVFile(filename, 5, 1);
 
             foreach (string[] row in res) {
-                try {
-                    RegularProduct newProduct = new RegularProduct(int.Parse(row[0]), row[1], decimal.Parse(row[2]) / 100, false, row[3] == "1");
-                    if (GetProductByID(newProduct.ID) != null) {
+                try
+                {
+                    int id = int.Parse(row[0]);
+                    string name = row[1];
+                    decimal price = decimal.Parse(row[2]) / 100;
+                    bool canBeBoughtOnCredit = false;
+                    bool active = row[3] == "1";
+                    BaseProduct productToAdd = null;
+                    if (row[4] != "")
+                    {
+                        if (!DateTime.TryParse(row[4], out DateTime deactivateDate))
+                        {
+                            throw new Exception("deactivate date is invalid");
+                        }
+
+                        productToAdd = new SeasonalProduct(
+                            id,
+                            name,
+                            price,
+                            active,
+                            canBeBoughtOnCredit,
+                            DateTime.MinValue,
+                            deactivateDate
+                        );
+                    }
+                    else
+                    {
+                        productToAdd = new RegularProduct(int.Parse(row[0]), row[1],
+                            decimal.Parse(row[2]) / 100, false, row[3] == "1");
+                    }
+                    
+                    if (GetProductByID(productToAdd.ID) != null)
+                    {
                         throw new Exception("ID is not unique");
                     }
-                    _products.Add(newProduct);
+
+                    _products.Add(productToAdd);
                 } catch (Exception e) {
                     Console.WriteLine($"Error while loading product '{string.Join(";", row)}'");
                     Console.WriteLine(e.Message);
@@ -74,7 +105,7 @@ namespace StregsystemCore {
         }
 
 
-        public InsertCashTransaction AddCreditsToAccount(User user, int amount) {
+        public InsertCashTransaction AddCreditsToAccount(User user, decimal amount) {
             InsertCashTransaction insertCashTransaction = new InsertCashTransaction(_lastTransactionId++, user, amount);
             insertCashTransaction.Execute();
             _transactionLogger.LogTransaction(insertCashTransaction);
