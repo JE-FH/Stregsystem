@@ -94,16 +94,15 @@ namespace StregsystemCore
         public void Start()
         {
             _running = true;
+            foreach (BaseProduct product in _stregsystem.ActiveProducts)
+            {
+                Console.WriteLine(product);
+            }
             while (_running)
             {
-                foreach (BaseProduct product in _stregsystem.ActiveProducts)
-                {
-                    Console.WriteLine(product);
-                }
                 Console.Write("> ");
                 string rawCommand = Console.ReadLine();
                 CommandEntered?.Invoke(rawCommand);
-                Console.Write("\n\n");
             }
         }
     }

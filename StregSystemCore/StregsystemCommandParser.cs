@@ -6,11 +6,46 @@ using System.Threading.Tasks;
 
 namespace StregsystemCore
 {
+    class UserNotFoundException : Exception
+    {
+        public string GivenUsername { get; private set; }
+        public UserNotFoundException(string givenUsername) 
+        {
+            GivenUsername = givenUsername;
+        }
+    }
+
+    class ProductNotFoundException : Exception
+    {
+        public int GivenID { get; private set; }
+        public ProductNotFoundException(int givenID)
+        {
+            GivenID = givenID;
+        }
+    }
+
+    class BadArgumentException : Exception
+    {
+        public int ArgumentIndex { get; private set; }
+        public BadArgumentException(int argumentIndex, string message) : base(message)
+        {
+            ArgumentIndex = argumentIndex;
+        }
+    }
+
+    class AdminCommandNotFoundException : Exception
+    {
+        public string GivenComand { get; private set; }
+        public AdminCommandNotFoundException(string givenCommand)
+        {
+            GivenComand = givenCommand;
+        }
+    }
+
     delegate void AdminCommandHandler(string commandName, string[] args);
     delegate void PurchaseProductHandler(User customer, BaseProduct product, int amount);
     internal class StregsystemCommandParser
     {
-        //Should we use on?
         public event PurchaseProductHandler PurchaseProduct;
         Dictionary<string, AdminCommandHandler> _adminCommands;
         IStregsystem _stregsystem;
@@ -32,11 +67,23 @@ namespace StregsystemCore
                 .Where(part => part.Length > 0)
                 .ToArray();
 
+
             if (commandParts.Length == 0)
             {
                 return;
-            } 
-            else if (commandParts.Length == 1)
+            }
+
+            if (commandParts[0].StartsWith(":"))
+            {
+                string commandName = commandParts[0].Substring(1);
+                if (!_adminCommands.TryGetValue(commandName, out AdminCommandHandler handler))
+                {
+                    throw new AdminCommandNotFoundException(commandName);
+                }
+                handler(commandName, commandParts[1..]);
+            }
+
+            if (commandParts.Length == 1)
             {
                 UserInfoCommand(commandParts[0]);
                 
@@ -52,32 +99,21 @@ namespace StregsystemCore
             }
         }
 
-        //TODO: der er overlappende funktionalitet i alle de her commands, så der skal laves noget generelt
-        private void UserInfoCommand(string username)
+        public User GetUserOrThrow(string username)
         {
             User user = _stregsystem.GetUserByUsername(username);
             if (user == null)
             {
-                _stregsystemUI.DisplayUserNotFound(username);
-                return;
+                throw new UserNotFoundException(username);
             }
-            _stregsystemUI.DisplayUserInfo(user);
-            return;
+            return user;
         }
 
-        private void PurchaseCommand(string username, string productId)
+        public BaseProduct GetProductOrThrow(string productId, int argIndex)
         {
-            User user = _stregsystem.GetUserByUsername(username);
-            if (user == null)
-            {
-                _stregsystemUI.DisplayUserNotFound(username);
-                return;
-            }
-
             if (!int.TryParse(productId, out int idArg))
             {
-                _stregsystemUI.DisplayGeneralError("Product id (argument 2) needs to be a number");
-                return;
+                throw new BadArgumentException(argIndex, "Product Id needs to be a valid integer");
             }
 
             BaseProduct targetProduct = _stregsystem.GetProductByID(idArg);
@@ -85,40 +121,47 @@ namespace StregsystemCore
             {
                 //It might be debateable whether or not the system should tell the user that
                 //The product does not exist or that it isnt activated
-                _stregsystemUI.DisplayProductNotFound(productId);
+                throw new ProductNotFoundException(idArg);
             }
-
-            PurchaseProduct?.Invoke(user, targetProduct, 1);
+            return targetProduct;
         }
 
-        private void MultiPurchaseCommand(string username, string amount, string productId)
+        public int ParseCountOrThrow(string givenCount, int argIndex)
         {
-            User user = _stregsystem.GetUserByUsername(username);
-            if (user == null)
+            if (!int.TryParse(givenCount, out int count) || count < 1)
             {
-                _stregsystemUI.DisplayUserNotFound(username);
-                return;
+                throw new BadArgumentException(argIndex, "count needs to be a valid positive integer");
             }
+            return count;
+        }
 
-            if (!int.TryParse(productId, out int idArg))
-            {
-                _stregsystemUI.DisplayGeneralError("Product id (argument 3) needs to be an integer");
-                return;
-            }
+        //TODO: der er overlappende funktionalitet i alle de her commands, så der skal laves noget generelt
+        private void UserInfoCommand(string username)
+        {
+            User user = GetUserOrThrow(username);
+            _stregsystemUI.DisplayUserInfo(user);
+            return;
+        }
 
-            BaseProduct targetProduct = _stregsystem.GetProductByID(idArg);
-            if (targetProduct == null)
-            {
-                _stregsystemUI.DisplayProductNotFound(productId);
-            }
+        private void PurchaseCommand(string username, string productId)
+        {
+            User user = GetUserOrThrow(username);
+            
+            BaseProduct product = GetProductOrThrow(productId, 2);
 
-            if (!int.TryParse(amount, out int amountArg) || amountArg < 1)
-            {
-                _stregsystemUI.DisplayGeneralError("amount (argument 2) needs to be a valid positive integer");
-                return;
-            }
+            PurchaseProduct?.Invoke(user, product, 1);
+        }
 
-            PurchaseProduct?.Invoke(user, targetProduct, amountArg);
+        private void MultiPurchaseCommand(string username, string count, string productId)
+        {
+            User user = GetUserOrThrow(username);
+
+            //There is an issue here getting the argument index if it changes elsewhere
+            BaseProduct product = GetProductOrThrow(productId, 3);
+
+            int parsedCount = ParseCountOrThrow(count, 2);
+
+            PurchaseProduct?.Invoke(user, product, parsedCount);
         }
 
         private string[] SplitCommand(string command)

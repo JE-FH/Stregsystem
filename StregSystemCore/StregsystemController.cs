@@ -19,7 +19,22 @@ namespace StregsystemCore
 
         private void CommandEntered(string rawCommand)
         {
-            _stregsystemCommandParser.ParseCommand(rawCommand);
+            try
+            {
+                _stregsystemCommandParser.ParseCommand(rawCommand);
+            }
+            catch (UserNotFoundException ex)
+            {
+                _stregsystemUI.DisplayUserNotFound(ex.GivenUsername);
+            }
+            catch (ProductNotFoundException ex)
+            {
+                _stregsystemUI.DisplayProductNotFound(ex.GivenID.ToString());
+            }
+            catch (BadArgumentException ex)
+            {
+                _stregsystemUI.DisplayGeneralError($"Invalid argument {ex.ArgumentIndex}, {ex.Message}");
+            }
         }
 
         private void PurchaseProduct(User customer, BaseProduct product, int amount)
