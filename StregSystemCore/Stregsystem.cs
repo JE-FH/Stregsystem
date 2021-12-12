@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace StregsystemCore {
     public class Stregsystem : IStregsystem {
+        static readonly Regex HTMLTagPattern = new Regex("<[^>]+>");
         private TransactionLogger _transactionLogger;
 
         int _lastTransactionId;
@@ -33,7 +35,7 @@ namespace StregsystemCore {
                 try
                 {
                     int id = int.Parse(row[0]);
-                    string name = row[1];
+                    string name = HTMLTagPattern.Replace(row[1], "");
                     decimal price = decimal.Parse(row[2]) / 100;
                     bool canBeBoughtOnCredit = false;
                     bool active = row[3] == "1";
@@ -57,8 +59,7 @@ namespace StregsystemCore {
                     }
                     else
                     {
-                        productToAdd = new RegularProduct(int.Parse(row[0]), row[1],
-                            decimal.Parse(row[2]) / 100, false, row[3] == "1");
+                        productToAdd = new RegularProduct(id, name, price, false, active);
                     }
                     
                     if (GetProductByID(productToAdd.ID) != null)
