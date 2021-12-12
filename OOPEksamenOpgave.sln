@@ -5,7 +5,9 @@ VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OOPEksamenOpgave", "OOPEksamenOpgave\OOPEksamenOpgave.csproj", "{5339ECB3-4B20-4629-94BD-AB8B1B6488F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StregsystemCore", "StregSystemCore\StregsystemCore.csproj", "{ECAB3790-2471-4403-AFA9-5A010733A027}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StregsystemCore", "StregSystemCore\StregsystemCore.csproj", "{ECAB3790-2471-4403-AFA9-5A010733A027}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StregsystemCoreTest", "StregsystemCoreTest\StregsystemCoreTest.csproj", "{7877851F-9D96-47CB-BBE7-596ED5832843}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{ECAB3790-2471-4403-AFA9-5A010733A027}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECAB3790-2471-4403-AFA9-5A010733A027}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECAB3790-2471-4403-AFA9-5A010733A027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7877851F-9D96-47CB-BBE7-596ED5832843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7877851F-9D96-47CB-BBE7-596ED5832843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7877851F-9D96-47CB-BBE7-596ED5832843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7877851F-9D96-47CB-BBE7-596ED5832843}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
